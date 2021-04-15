@@ -45,5 +45,3 @@ $ skaffold dev
 ```
 
 6. Now you should see the app running at `ecommerce-fullstack.dev`
-
-## A star would be nice if you like it!
