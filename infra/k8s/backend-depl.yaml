@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-depl
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: backend
+  template:
+    metadata:
+      labels:
+        component: backend
+    spec:
+      containers:
+        - name: backend
+          image: jared0306/backend
+          ports:
+            - containerPort: 8080
+          env:
+            - name: JWT_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret-key
+                  key: JWT_SECRET_KEY
+            - name: STRIPE_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: stripe-secret-key
+                  key: STRIPE_SECRET_KEY
+            - name: DB_USER
+              value: root
+            - name: DB_HOST
+              value: mysql-clusterip-srv
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_DATABASE
+              value: ecommerce
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-password
+                  key: MYSQL_ROOT_PASSWORD
+            # - name: DB_USER
+            #   value: postgres
+            # - name: DB_HOST
+            #   value: postgres-clusterip-srv
+            # - name: DB_PORT
+            #   value: "5432"
+            # - name: DB_DATABASE
+            #   value: postgres
+            # - name: POSTGRES_PASSWORD
+            #   valueFrom:
+            #     secretKeyRef:
+            #       name: pgpassword
+            #       key: POSTGRES_PASSWORD
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-srv
+spec:
+  selector:
+    component: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
